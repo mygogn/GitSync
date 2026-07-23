@@ -25,20 +25,35 @@ jobs:
         flutter-version: 'stable'
 
     - name: Decode keystore (if provided)
-      if: ${{ secrets.KEYSTORE_BASE64 != '' }}
+      env:
+        KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
       run: |
-        mkdir -p android/app
-        echo "$KEYSTORE_BASE64" | base64 --decode > android/app/keystore.jks
+        if [ -n "$KEYSTORE_BASE64" ]; then
+          mkdir -p android/app
+          echo "$KEYSTORE_BASE64" | base64 --decode > android/app/keystore.jks
+          echo "Keystore decoded to android/app/keystore.jks"
+        else
+          echo "No KEYSTORE_BASE64 provided — skipping keystore decode"
+        fi
 
     - name: Create android/key.properties (if signing)
-      if: ${{ secrets.KEYSTORE_BASE64 != '' }}
+      env:
+        KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
       run: |
-        cat > android/key.properties <<EOF
-        storePassword=${{ secrets.KEYSTORE_PASSWORD }}
-        keyPassword=${{ secrets.KEY_PASSWORD }}
-        keyAlias=${{ secrets.KEY_ALIAS }}
-        storeFile=app/keystore.jks
-        EOF
+        if [ -n "$KEYSTORE_BASE64" ]; then
+          cat > android/key.properties <<EOF
+storePassword=${KEYSTORE_PASSWORD}
+keyPassword=${KEY_PASSWORD}
+keyAlias=${KEY_ALIAS}
+storeFile=app/keystore.jks
+EOF
+          echo "Created android/key.properties"
+        else
+          echo "No KEYSTORE_BASE64 provided — skipping key.properties creation"
+        fi
 
     - name: Install dependencies
       run: flutter pub get
