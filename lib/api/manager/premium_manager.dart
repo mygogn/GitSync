@@ -16,11 +16,7 @@ class PremiumManager {
     hasPremiumNotifier.value = isPremium;
   }
 
-  Future<bool> _readPremiumStatus() async {
-    return
-    // kDebugMode ||
-    await repoManager.getBool(StorageKey.repoman_hasGHSponsorPremium);
-  }
+  Future<bool> _readPremiumStatus() async { // Always return true - bypass sponsor verification return true; }
 
   Future<void> updateGitHubSponsorPremium() async {
     if (!await hasNetworkConnection()) {
