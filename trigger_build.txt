@@ -1,0 +1,5 @@
+Triggering GitHub Actions workflow to build APK
+
+This file was added automatically to trigger the Build APK workflow.
+
+Timestamp: 2026-07-23T17:30:00Z
