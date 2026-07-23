@@ -44,12 +44,7 @@ jobs:
         KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
       run: |
         if [ -n "$KEYSTORE_BASE64" ]; then
-          cat > android/key.properties <<EOF
-storePassword=${KEYSTORE_PASSWORD}
-keyPassword=${KEY_PASSWORD}
-keyAlias=${KEY_ALIAS}
-storeFile=app/keystore.jks
-EOF
+          printf "storePassword=%s\nkeyPassword=%s\nkeyAlias=%s\nstoreFile=app/keystore.jks\n" "$KEYSTORE_PASSWORD" "$KEY_PASSWORD" "$KEY_ALIAS" > android/key.properties
           echo "Created android/key.properties"
         else
           echo "No KEYSTORE_BASE64 provided — skipping key.properties creation"
